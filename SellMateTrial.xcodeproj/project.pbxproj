@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		2242A1632F0B02BE00C92AEE /* StripeTerminal in Frameworks */ = {isa = PBXBuildFile; productRef = 2242A1622F0B02BE00C92AEE /* StripeTerminal */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		2242A13C2EF4680100C92AEE /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -29,9 +33,39 @@
 		2242A1452EF4680100C92AEE /* SellMateTrialUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SellMateTrialUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		2242A15C2EF46C4F00C92AEE /* Exceptions for "SellMateTrialUITests" folder in "SellMateTrialUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				.swift,
+			);
+			target = 2242A1442EF4680100C92AEE /* SellMateTrialUITests */;
+		};
+		2242A1782F0E355800C92AEE /* Exceptions for "SellMateTrial" folder in "SellMateTrial" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Info.plist,
+			);
+			target = 2242A12B2EF467FF00C92AEE /* SellMateTrial */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
+
+/* Begin PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+		2242A15D2EF46C4F00C92AEE /* Exceptions for "SellMateTrialUITests" folder in "Compile Sources" phase from "SellMateTrialUITests" target */ = {
+			isa = PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet;
+			buildPhase = 2242A1412EF4680100C92AEE /* Sources */;
+			membershipExceptions = (
+				.swift,
+			);
+		};
+/* End PBXFileSystemSynchronizedGroupBuildPhaseMembershipExceptionSet section */
+
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		2242A12E2EF467FF00C92AEE /* SellMateTrial */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				2242A1782F0E355800C92AEE /* Exceptions for "SellMateTrial" folder in "SellMateTrial" target */,
+			);
 			path = SellMateTrial;
 			sourceTree = "<group>";
 		};
@@ -42,6 +76,10 @@
 		};
 		2242A1482EF4680100C92AEE /* SellMateTrialUITests */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				2242A15C2EF46C4F00C92AEE /* Exceptions for "SellMateTrialUITests" folder in "SellMateTrialUITests" target */,
+				2242A15D2EF46C4F00C92AEE /* Exceptions for "SellMateTrialUITests" folder in "Compile Sources" phase from "SellMateTrialUITests" target */,
+			);
 			path = SellMateTrialUITests;
 			sourceTree = "<group>";
 		};
@@ -52,6 +90,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				2242A1632F0B02BE00C92AEE /* StripeTerminal in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -78,6 +117,7 @@
 				2242A12E2EF467FF00C92AEE /* SellMateTrial */,
 				2242A13E2EF4680100C92AEE /* SellMateTrialTests */,
 				2242A1482EF4680100C92AEE /* SellMateTrialUITests */,
+				2242A1612F0B02BE00C92AEE /* Frameworks */,
 				2242A12D2EF467FF00C92AEE /* Products */,
 			);
 			sourceTree = "<group>";
@@ -90,6 +130,13 @@
 				2242A1452EF4680100C92AEE /* SellMateTrialUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		2242A1612F0B02BE00C92AEE /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -112,6 +159,7 @@
 			);
 			name = SellMateTrial;
 			packageProductDependencies = (
+				2242A1622F0B02BE00C92AEE /* StripeTerminal */,
 			);
 			productName = SellMateTrial;
 			productReference = 2242A12C2EF467FF00C92AEE /* SellMateTrial.app */;
@@ -170,6 +218,9 @@
 			isa = PBXProject;
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
+				KnownAssetTags = (
+					New,
+				);
 				LastSwiftUpdateCheck = 2610;
 				LastUpgradeCheck = 2610;
 				TargetAttributes = {
@@ -195,6 +246,9 @@
 			);
 			mainGroup = 2242A1232EF467FF00C92AEE;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				2242A1602F0B01D400C92AEE /* XCRemoteSwiftPackageReference "stripe-terminal-ios" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 2242A12D2EF467FF00C92AEE /* Products */;
 			projectDirPath = "";
@@ -400,6 +454,8 @@
 				DEVELOPMENT_TEAM = ZYH7D4HXF7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SellMateTrial/Info.plist;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -432,6 +488,8 @@
 				DEVELOPMENT_TEAM = ZYH7D4HXF7;
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = SellMateTrial/Info.plist;
+				INFOPLIST_KEY_NSBluetoothAlwaysUsageDescription = "";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -578,6 +636,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		2242A1602F0B01D400C92AEE /* XCRemoteSwiftPackageReference "stripe-terminal-ios" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/stripe/stripe-terminal-ios";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 5.1.1;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		2242A1622F0B02BE00C92AEE /* StripeTerminal */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 2242A1602F0B01D400C92AEE /* XCRemoteSwiftPackageReference "stripe-terminal-ios" */;
+			productName = StripeTerminal;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = 2242A1242EF467FF00C92AEE /* Project object */;
 }
