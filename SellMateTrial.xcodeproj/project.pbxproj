@@ -8,6 +8,21 @@
 
 /* Begin PBXBuildFile section */
 		2242A1632F0B02BE00C92AEE /* StripeTerminal in Frameworks */ = {isa = PBXBuildFile; productRef = 2242A1622F0B02BE00C92AEE /* StripeTerminal */; };
+		224A17972F1DDE9100D1A896 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = 224A17962F1DDE9100D1A896 /* GoogleService-Info.plist */; };
+		224A179A2F1DDF6100D1A896 /* FirebaseAI in Frameworks */ = {isa = PBXBuildFile; productRef = 224A17992F1DDF6100D1A896 /* FirebaseAI */; };
+		224A179C2F1DDF6100D1A896 /* FirebaseAILogic in Frameworks */ = {isa = PBXBuildFile; productRef = 224A179B2F1DDF6100D1A896 /* FirebaseAILogic */; };
+		224A179E2F1DDF6100D1A896 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = 224A179D2F1DDF6100D1A896 /* FirebaseAnalytics */; };
+		224A17A02F1DDF6100D1A896 /* FirebaseAnalyticsCore in Frameworks */ = {isa = PBXBuildFile; productRef = 224A179F2F1DDF6100D1A896 /* FirebaseAnalyticsCore */; };
+		224A17A22F1DDF6100D1A896 /* FirebaseAnalyticsIdentitySupport in Frameworks */ = {isa = PBXBuildFile; productRef = 224A17A12F1DDF6100D1A896 /* FirebaseAnalyticsIdentitySupport */; };
+		224A17A42F1DF4D800D1A896 /* LandingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224A17A32F1DF4D800D1A896 /* LandingView.swift */; };
+		224A17A62F1DF4E100D1A896 /* PlanogramView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224A17A52F1DF4E100D1A896 /* PlanogramView.swift */; };
+		224A17A82F1DFAE100D1A896 /* PlanogramModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224A17A72F1DFAE100D1A896 /* PlanogramModels.swift */; };
+		224A17AA2F1DFB0300D1A896 /* FirestorePlanogramService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224A17A92F1DFB0300D1A896 /* FirestorePlanogramService.swift */; };
+		224A17AC2F1DFB1E00D1A896 /* PlanogramGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224A17AB2F1DFB1E00D1A896 /* PlanogramGridView.swift */; };
+		224A17AE2F1DFB6C00D1A896 /* SlotDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224A17AD2F1DFB6C00D1A896 /* SlotDetailView.swift */; };
+		224A17B02F1DFD8B00D1A896 /* FirebaseCore in Frameworks */ = {isa = PBXBuildFile; productRef = 224A17AF2F1DFD8B00D1A896 /* FirebaseCore */; };
+		224A17B22F1DFE0600D1A896 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = 224A17B12F1DFE0600D1A896 /* FirebaseFirestore */; };
+		224A17B42F2065C800D1A896 /* PiVendClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 224A17B32F2065C700D1A896 /* PiVendClient.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -31,6 +46,14 @@
 		2242A12C2EF467FF00C92AEE /* SellMateTrial.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = SellMateTrial.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		2242A13B2EF4680100C92AEE /* SellMateTrialTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SellMateTrialTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		2242A1452EF4680100C92AEE /* SellMateTrialUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = SellMateTrialUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		224A17962F1DDE9100D1A896 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
+		224A17A32F1DF4D800D1A896 /* LandingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LandingView.swift; sourceTree = "<group>"; };
+		224A17A52F1DF4E100D1A896 /* PlanogramView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanogramView.swift; sourceTree = "<group>"; };
+		224A17A72F1DFAE100D1A896 /* PlanogramModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanogramModels.swift; sourceTree = "<group>"; };
+		224A17A92F1DFB0300D1A896 /* FirestorePlanogramService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FirestorePlanogramService.swift; sourceTree = "<group>"; };
+		224A17AB2F1DFB1E00D1A896 /* PlanogramGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlanogramGridView.swift; sourceTree = "<group>"; };
+		224A17AD2F1DFB6C00D1A896 /* SlotDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SlotDetailView.swift; sourceTree = "<group>"; };
+		224A17B32F2065C700D1A896 /* PiVendClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PiVendClient.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -90,7 +113,14 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				224A179C2F1DDF6100D1A896 /* FirebaseAILogic in Frameworks */,
 				2242A1632F0B02BE00C92AEE /* StripeTerminal in Frameworks */,
+				224A17A22F1DDF6100D1A896 /* FirebaseAnalyticsIdentitySupport in Frameworks */,
+				224A17A02F1DDF6100D1A896 /* FirebaseAnalyticsCore in Frameworks */,
+				224A17B02F1DFD8B00D1A896 /* FirebaseCore in Frameworks */,
+				224A17B22F1DFE0600D1A896 /* FirebaseFirestore in Frameworks */,
+				224A179E2F1DDF6100D1A896 /* FirebaseAnalytics in Frameworks */,
+				224A179A2F1DDF6100D1A896 /* FirebaseAI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -114,11 +144,19 @@
 		2242A1232EF467FF00C92AEE = {
 			isa = PBXGroup;
 			children = (
+				224A17B32F2065C700D1A896 /* PiVendClient.swift */,
+				224A17962F1DDE9100D1A896 /* GoogleService-Info.plist */,
 				2242A12E2EF467FF00C92AEE /* SellMateTrial */,
 				2242A13E2EF4680100C92AEE /* SellMateTrialTests */,
 				2242A1482EF4680100C92AEE /* SellMateTrialUITests */,
 				2242A1612F0B02BE00C92AEE /* Frameworks */,
 				2242A12D2EF467FF00C92AEE /* Products */,
+				224A17A32F1DF4D800D1A896 /* LandingView.swift */,
+				224A17A52F1DF4E100D1A896 /* PlanogramView.swift */,
+				224A17A72F1DFAE100D1A896 /* PlanogramModels.swift */,
+				224A17A92F1DFB0300D1A896 /* FirestorePlanogramService.swift */,
+				224A17AB2F1DFB1E00D1A896 /* PlanogramGridView.swift */,
+				224A17AD2F1DFB6C00D1A896 /* SlotDetailView.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -160,6 +198,13 @@
 			name = SellMateTrial;
 			packageProductDependencies = (
 				2242A1622F0B02BE00C92AEE /* StripeTerminal */,
+				224A17992F1DDF6100D1A896 /* FirebaseAI */,
+				224A179B2F1DDF6100D1A896 /* FirebaseAILogic */,
+				224A179D2F1DDF6100D1A896 /* FirebaseAnalytics */,
+				224A179F2F1DDF6100D1A896 /* FirebaseAnalyticsCore */,
+				224A17A12F1DDF6100D1A896 /* FirebaseAnalyticsIdentitySupport */,
+				224A17AF2F1DFD8B00D1A896 /* FirebaseCore */,
+				224A17B12F1DFE0600D1A896 /* FirebaseFirestore */,
 			);
 			productName = SellMateTrial;
 			productReference = 2242A12C2EF467FF00C92AEE /* SellMateTrial.app */;
@@ -248,6 +293,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				2242A1602F0B01D400C92AEE /* XCRemoteSwiftPackageReference "stripe-terminal-ios" */,
+				224A17982F1DDF6100D1A896 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 2242A12D2EF467FF00C92AEE /* Products */;
@@ -266,6 +312,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				224A17972F1DDE9100D1A896 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -290,6 +337,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				224A17A42F1DF4D800D1A896 /* LandingView.swift in Sources */,
+				224A17A62F1DF4E100D1A896 /* PlanogramView.swift in Sources */,
+				224A17A82F1DFAE100D1A896 /* PlanogramModels.swift in Sources */,
+				224A17AC2F1DFB1E00D1A896 /* PlanogramGridView.swift in Sources */,
+				224A17B42F2065C800D1A896 /* PiVendClient.swift in Sources */,
+				224A17AE2F1DFB6C00D1A896 /* SlotDetailView.swift in Sources */,
+				224A17AA2F1DFB0300D1A896 /* FirestorePlanogramService.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -646,6 +700,14 @@
 				minimumVersion = 5.1.1;
 			};
 		};
+		224A17982F1DDF6100D1A896 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.8.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -653,6 +715,41 @@
 			isa = XCSwiftPackageProductDependency;
 			package = 2242A1602F0B01D400C92AEE /* XCRemoteSwiftPackageReference "stripe-terminal-ios" */;
 			productName = StripeTerminal;
+		};
+		224A17992F1DDF6100D1A896 /* FirebaseAI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 224A17982F1DDF6100D1A896 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAI;
+		};
+		224A179B2F1DDF6100D1A896 /* FirebaseAILogic */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 224A17982F1DDF6100D1A896 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAILogic;
+		};
+		224A179D2F1DDF6100D1A896 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 224A17982F1DDF6100D1A896 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		224A179F2F1DDF6100D1A896 /* FirebaseAnalyticsCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 224A17982F1DDF6100D1A896 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalyticsCore;
+		};
+		224A17A12F1DDF6100D1A896 /* FirebaseAnalyticsIdentitySupport */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 224A17982F1DDF6100D1A896 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalyticsIdentitySupport;
+		};
+		224A17AF2F1DFD8B00D1A896 /* FirebaseCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 224A17982F1DDF6100D1A896 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseCore;
+		};
+		224A17B12F1DFE0600D1A896 /* FirebaseFirestore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 224A17982F1DDF6100D1A896 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseFirestore;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
