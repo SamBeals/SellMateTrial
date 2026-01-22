@@ -153,7 +153,7 @@ struct SlotPlanogramDoc: Equatable, Identifiable {
 
     // MARK: - Coercion helpers (Firestore-safe)
 
-    private static func coerceBool(_ any: Any?) -> Bool? {
+    static func coerceBool(_ any: Any?) -> Bool? {
         switch any {
         case let b as Bool:
             return b
@@ -169,7 +169,7 @@ struct SlotPlanogramDoc: Equatable, Identifiable {
         }
     }
 
-    private static func coerceString(_ any: Any?) -> String? {
+    static func coerceString(_ any: Any?) -> String? {
         switch any {
         case let s as String:
             return s
@@ -180,7 +180,7 @@ struct SlotPlanogramDoc: Equatable, Identifiable {
         }
     }
 
-    private static func coerceInt(_ any: Any?) -> Int? {
+    static func coerceInt(_ any: Any?) -> Int? {
         switch any {
         case let i as Int:
             return i
@@ -202,11 +202,47 @@ struct SlotPlanogramDoc: Equatable, Identifiable {
     }
 }
 
+// MARK: - Inventory Document Model (snake_case)
+struct InventoryDoc: Equatable, Identifiable {
+    var id: String { slotId }
+
+    let slotId: String
+    let enabled: Bool?
+    let qty: Int?
+    let priceCents: Int?
+    let skuId: String?
+    let capacity: Int?
+
+    init?(documentID: String, data: [String: Any], machineId: String, collectionPath: String) {
+        let sid =
+            SlotPlanogramDoc.coerceString(data["slot_id"])
+            ?? SlotPlanogramDoc.coerceString(data["slotId"])
+            ?? documentID
+
+        let trimmedSid = sid.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !trimmedSid.isEmpty else { return nil }
+        self.slotId = trimmedSid
+
+        self.enabled = SlotPlanogramDoc.coerceBool(data["enabled"])
+        self.qty = SlotPlanogramDoc.coerceInt(data["qty"]) ?? SlotPlanogramDoc.coerceInt(data["inventory"])
+        self.priceCents =
+            SlotPlanogramDoc.coerceInt(data["price_cents"])
+            ?? SlotPlanogramDoc.coerceInt(data["priceCents"])
+        self.skuId = SlotPlanogramDoc.coerceString(data["sku_id"]) ?? SlotPlanogramDoc.coerceString(data["skuId"])
+        self.capacity = SlotPlanogramDoc.coerceInt(data["capacity"])
+
+        if self.qty == nil && self.priceCents == nil && self.skuId == nil && self.enabled == nil && self.capacity == nil {
+            print("[PlanogramService] Warning: empty inventory doc for \(documentID) in \(collectionPath) (machineId=\(machineId))")
+        }
+    }
+}
+
 // MARK: - Service (subcollection-based)
 final class FirestorePlanogramService {
     private let db: Firestore
     private let machines = "machines"
     private let slotsCollection = "planogramSlots"
+    private let inventoryCollection = "inventory"
 
     init(db: Firestore = Firestore.firestore()) {
         self.db = db
@@ -216,18 +252,26 @@ final class FirestorePlanogramService {
         let slotsRef = db.collection(machines)
             .document(machineId)
             .collection(slotsCollection)
+        let inventoryRef = db.collection(machines)
+            .document(machineId)
+            .collection(inventoryCollection)
 
         do {
-            let snapshot = try await slotsRef.getDocuments()
-            print("[PlanogramService] load() fetched \(snapshot.documents.count) docs for machineId=\(machineId)")
-            if snapshot.documents.isEmpty {
+            async let slotsSnapshot = slotsRef.getDocuments()
+            async let inventorySnapshot = inventoryRef.getDocuments()
+
+            let slotsDocs = try await slotsSnapshot
+            let inventoryDocs = try await inventorySnapshot
+
+            print("[PlanogramService] load() fetched \(slotsDocs.documents.count) planogramSlots docs for machineId=\(machineId)")
+            if slotsDocs.documents.isEmpty {
                 throw PlanogramServiceError.notFound
             }
 
             var decodedDocs: [SlotPlanogramDoc] = []
-            decodedDocs.reserveCapacity(snapshot.documents.count)
+            decodedDocs.reserveCapacity(slotsDocs.documents.count)
 
-            for doc in snapshot.documents {
+            for doc in slotsDocs.documents {
                 let data = doc.data()
                 if let slotDoc = SlotPlanogramDoc(
                     documentID: doc.documentID,
@@ -245,6 +289,12 @@ final class FirestorePlanogramService {
             if decodedDocs.isEmpty {
                 throw PlanogramServiceError.decodingFailed
             }
+
+            let inventoryBySlotId = Self.decodeInventoryDocs(
+                docs: inventoryDocs.documents,
+                machineId: machineId,
+                collectionPath: "\(machines)/\(machineId)/\(inventoryCollection)"
+            )
 
             decodedDocs.sort { a, b in
                 if let ar = a.row, let ac = a.col, let br = b.row, let bc = b.col {
@@ -271,7 +321,7 @@ final class FirestorePlanogramService {
                     i2c = nil
                 }
 
-                return Slot(
+                var slot = Slot(
                     slotId: d.slotId,
                     enabled: d.enabled,
                     inventory: d.inventory,
@@ -279,6 +329,25 @@ final class FirestorePlanogramService {
                     motor: SlotMotor(motorId: d.motorId),
                     i2c: i2c
                 )
+
+                if let inventoryDoc = inventoryBySlotId[slot.slotId] {
+                    slot.enabled = inventoryDoc.enabled ?? slot.enabled
+                    slot.inventory = inventoryDoc.qty ?? slot.inventory
+                    let existingName = slot.product?.name ?? ""
+                    let productId = inventoryDoc.skuId ?? slot.product?.productId ?? ""
+                    let priceCents = inventoryDoc.priceCents ?? slot.product?.priceCents ?? 0
+                    if productId.isEmpty && existingName.isEmpty && priceCents == 0 {
+                        slot.product = nil
+                    } else {
+                        slot.product = Product(
+                            productId: productId,
+                            name: existingName,
+                            priceCents: priceCents
+                        )
+                    }
+                }
+
+                return slot
             }
 
             // 🔎 Helpful one-time debug (safe to keep during MVP)
@@ -312,6 +381,7 @@ final class FirestorePlanogramService {
     func save(machineId: String, planogram: Planogram) async throws {
         let machineRef = db.collection(machines).document(machineId)
         let slotsRef = machineRef.collection(slotsCollection)
+        let inventoryRef = machineRef.collection(inventoryCollection)
 
         let batch = db.batch()
 
@@ -332,35 +402,40 @@ final class FirestorePlanogramService {
                 col = nil
             }
 
-            var dict: [String: Any] = [
-                "slotId": slot.slotId,
-                "enabled": slot.enabled,
-                "inventory": slot.inventory,
-                "motorId": slot.motor.motorId
+            var planogramDict: [String: Any] = [
+                "slot_id": slot.slotId,
+                "motor_id": slot.motor.motorId
             ]
 
-            if let p = slot.product, !(p.productId.isEmpty && p.name.isEmpty && p.priceCents == 0) {
-                dict["product"] = [
-                    "productId": p.productId,
-                    "name": p.name,
-                    "priceCents": p.priceCents
-                ]
-            }
-
-            if let row { dict["row"] = row }
-            if let col { dict["col"] = col }
+            if let row { planogramDict["row"] = row }
+            if let col { planogramDict["col"] = col }
 
             if let i2c = slot.i2c {
                 var i2cDict: [String: Any] = [:]
                 if let mask = i2c.mask { i2cDict["mask"] = mask }
                 if let bus = i2c.bus { i2cDict["bus"] = bus }
                 if let addr = i2c.address, !addr.isEmpty { i2cDict["address"] = addr }
-                if !i2cDict.isEmpty { dict["i2c"] = i2cDict }
+                if !i2cDict.isEmpty { planogramDict["i2c"] = i2cDict }
             }
 
             let slotDoc = slotsRef.document(slot.slotId)
-            batch.setData(dict, forDocument: slotDoc, merge: false)
-            print("[PlanogramService] Will write \(machines)/\(machineId)/\(slotsCollection)/\(slot.slotId) -> \(dict)")
+            batch.setData(planogramDict, forDocument: slotDoc, merge: true)
+            print("[PlanogramService] Will write \(machines)/\(machineId)/\(slotsCollection)/\(slot.slotId) -> \(planogramDict)")
+
+            var inventoryDict: [String: Any] = [
+                "slot_id": slot.slotId,
+                "enabled": slot.enabled,
+                "qty": slot.inventory
+            ]
+
+            if let p = slot.product, !(p.productId.isEmpty && p.name.isEmpty && p.priceCents == 0) {
+                inventoryDict["sku_id"] = p.productId
+                inventoryDict["price_cents"] = p.priceCents
+            }
+
+            let inventoryDoc = inventoryRef.document(slot.slotId)
+            batch.setData(inventoryDict, forDocument: inventoryDoc, merge: true)
+            print("[PlanogramService] Will write \(machines)/\(machineId)/\(inventoryCollection)/\(slot.slotId) -> \(inventoryDict)")
         }
 
         batch.setData(
@@ -384,5 +459,31 @@ final class FirestorePlanogramService {
             lines.append("  \(k): \(type(of: v)) -> \(v)")
         }
         print("[PlanogramService] Raw doc data types:\n" + lines.sorted().joined(separator: "\n"))
+    }
+
+    private static func decodeInventoryDocs(
+        docs: [QueryDocumentSnapshot],
+        machineId: String,
+        collectionPath: String
+    ) -> [String: InventoryDoc] {
+        var output: [String: InventoryDoc] = [:]
+        output.reserveCapacity(docs.count)
+
+        for doc in docs {
+            let data = doc.data()
+            if let inventoryDoc = InventoryDoc(
+                documentID: doc.documentID,
+                data: data,
+                machineId: machineId,
+                collectionPath: collectionPath
+            ) {
+                output[inventoryDoc.slotId] = inventoryDoc
+            } else {
+                print("[PlanogramService] Decode failed for inventory doc machineId=\(machineId) path=\(collectionPath) docId=\(doc.documentID)")
+                logTypes(for: data)
+            }
+        }
+
+        return output
     }
 }
