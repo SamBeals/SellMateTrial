@@ -3,6 +3,80 @@ import Combine
 import StripeTerminal
 import CoreBluetooth
 
+// MARK: - Google Cloud backend trigger (prototype-only)
+// NOTE: This is intentionally lightweight in SellMateTrial so we can mirror Android/Kotlin
+// payment->backend behavior without over-hardening this prototype.
+private struct CloudBackendService {
+    struct TriggerResult {
+        let statusCode: Int
+        let responseText: String
+    }
+
+    enum TriggerError: LocalizedError {
+        case missingBaseURL
+        case invalidBaseURL(String)
+        case requestFailed(String)
+
+        var errorDescription: String? {
+            switch self {
+            case .missingBaseURL:
+                return "Missing CLOUD_BACKEND_BASE_URL in Info.plist."
+            case .invalidBaseURL(let value):
+                return "Invalid CLOUD_BACKEND_BASE_URL: \(value)"
+            case .requestFailed(let reason):
+                return reason
+            }
+        }
+    }
+
+    private let session = URLSession.shared
+
+    func triggerVend(paymentIntent: PaymentIntent, reader: Reader?, slotId: String, pulseSeconds: Double) async throws -> TriggerResult {
+        guard let baseURLValue = Bundle.main.object(forInfoDictionaryKey: "CLOUD_BACKEND_BASE_URL") as? String,
+              !baseURLValue.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else {
+            throw TriggerError.missingBaseURL
+        }
+
+        guard let baseURL = URL(string: baseURLValue) else {
+            throw TriggerError.invalidBaseURL(baseURLValue)
+        }
+
+        let path = (Bundle.main.object(forInfoDictionaryKey: "CLOUD_BACKEND_VEND_PATH") as? String)?
+            .trimmingCharacters(in: .whitespacesAndNewlines)
+        let vendPath = (path?.isEmpty == false ? path! : "vend")
+
+        let url = baseURL.appendingPathComponent(vendPath)
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        if let apiKey = Bundle.main.object(forInfoDictionaryKey: "CLOUD_BACKEND_API_KEY") as? String, !apiKey.isEmpty {
+            request.setValue(apiKey, forHTTPHeaderField: "X-API-Key")
+        }
+
+        let payload: [String: Any] = [
+            "source": "sellmate_ios_prototype",
+            "payment_intent_id": paymentIntent.stripeId,
+            "amount": paymentIntent.amount,
+            "currency": paymentIntent.currency,
+            "reader_serial_number": reader?.serialNumber ?? "",
+            "reader_device_type": reader.map { String(describing: $0.deviceType) } ?? "unknown",
+            "slot_id": slotId,
+            "pulse_seconds": pulseSeconds
+        ]
+        request.httpBody = try JSONSerialization.data(withJSONObject: payload, options: [])
+
+        let (data, response) = try await session.data(for: request)
+        let statusCode = (response as? HTTPURLResponse)?.statusCode ?? -1
+        let responseText = String(data: data, encoding: .utf8) ?? "<non-utf8>"
+
+        guard (200..<300).contains(statusCode) else {
+            throw TriggerError.requestFailed("Cloud backend failed (\(statusCode)): \(responseText)")
+        }
+
+        return TriggerResult(statusCode: statusCode, responseText: responseText)
+    }
+}
+
 // MARK: - Bluetooth Permission Manager
 final class BluetoothPermissionManager: NSObject, ObservableObject, CBCentralManagerDelegate {
     private var central: CBCentralManager?
@@ -135,10 +209,10 @@ final class TerminalViewModel: NSObject, ObservableObject {
     private let testCurrency: String = "usd"
 
     // Vend API configuration (fill in your real API key)
-    private let vendURL = URL(string: "http://192.168.0.134:8787/vend")!
-    private let vendAPIKey: String = "CHANGE_ME"
+    // NOTE: kept as prototype defaults; expected to align with SellMateCustomer config during migration.
     private let vendSlotId: String = "shelf1_lane3"
     private let vendPulseSeconds: Double = 6.0
+    private let cloudBackend = CloudBackendService()
 
     override init() {
         super.init()
@@ -334,7 +408,7 @@ final class TerminalViewModel: NSObject, ObservableObject {
                 statusMessage = "Payment succeeded"
 
                 // Immediately trigger vend call; do not block UI
-                triggerVendAfterSuccess()
+                triggerVendAfterSuccess(processed)
 
             } catch {
                 state = .failed("Payment failed: \(error.localizedDescription)")
@@ -343,50 +417,19 @@ final class TerminalViewModel: NSObject, ObservableObject {
         }
     }
 
-    private func triggerVendAfterSuccess() {
-        // Fire-and-forget vend call on a detached Task; update UI on main actor.
-        Task.detached { [vendURL, vendAPIKey, vendSlotId, vendPulseSeconds] in
+    private func triggerVendAfterSuccess(_ paymentIntent: PaymentIntent) {
+        // Fire-and-forget cloud call that mirrors Android/Kotlin payment success behavior.
+        Task.detached { [vendSlotId, vendPulseSeconds, cloudBackend] in
             do {
-                var request = URLRequest(url: vendURL)
-                request.httpMethod = "POST"
-                request.setValue("application/json", forHTTPHeaderField: "Content-Type")
-                request.setValue(vendAPIKey, forHTTPHeaderField: "X-API-Key")
-
-                let body: [String: Any] = [
-                    "slot_id": vendSlotId,
-                    "pulse_seconds": vendPulseSeconds
-                ]
-                request.httpBody = try JSONSerialization.data(withJSONObject: body, options: [])
-
-                let (data, response) = try await URLSession.shared.data(for: request)
-                let http = response as? HTTPURLResponse
-                let status = http?.statusCode ?? -1
-
-                if (200..<300).contains(status) {
-                    if let text = String(data: data, encoding: .utf8) {
-                        print("[Vend] Success \(status): \(text)")
-                    } else {
-                        print("[Vend] Success \(status): <non-utf8 body>")
-                    }
-                    await MainActor.run {
-                        // Append to statusMessage but keep success state
-                        // Keep this concise to avoid truncating UI; detailed body is in console
-                        // You can adjust to show more details if desired
-                        // Note: Do not alter state = .succeeded
-                    }
-                } else {
-                    let bodyText = String(data: data, encoding: .utf8) ?? "<no body>"
-                    print("[Vend] Failure \(status): \(bodyText)")
-                    await MainActor.run {
-                        // Keep payment as succeeded; surface a warning
-                        // You can choose to present an alert if desired
-                    }
-                }
+                let result = try await cloudBackend.triggerVend(
+                    paymentIntent: paymentIntent,
+                    reader: Terminal.shared.connectedReader,
+                    slotId: vendSlotId,
+                    pulseSeconds: vendPulseSeconds
+                )
+                print("[CloudVend] Success \(result.statusCode): \(result.responseText)")
             } catch {
-                print("[Vend] Error: \(error.localizedDescription)")
-                await MainActor.run {
-                    // Keep payment as succeeded; surface a warning
-                }
+                print("[CloudVend] Error: \(error.localizedDescription)")
             }
         }
     }
@@ -466,7 +509,7 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 16) {
-                Text("Stripe Terminal (M2) Test")
+                Text("Stripe Terminal Payment Test")
                     .font(.title2).bold()
 
                 Toggle("Use Simulated Reader", isOn: $useSimulation)
@@ -519,7 +562,7 @@ struct ContentView: View {
             Button {
                 vm.startDiscovery(simulated: useSimulation)
             } label: {
-                Label("Discover M2 Readers", systemImage: "dot.radiowaves.left.and.right")
+                Label("Discover Readers", systemImage: "dot.radiowaves.left.and.right")
             }
             .buttonStyle(.borderedProminent)
 
